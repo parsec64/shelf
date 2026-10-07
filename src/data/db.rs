@@ -1,17 +1,11 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use sqlx::migrate::Migrator;
 use sqlx::sqlite::{SqlitePool, SqlitePoolOptions};
 
 use crate::data::ensure_data_dir;
 use crate::utils::logger::{log_debug, log_info};
-
-
-const DB_NAME: &str = "shelf.db";
-
-// Looks for migrations in the "./migrations" directory at compile time
-static MIGRATOR: Migrator = sqlx::migrate!();
+use crate::constants::{DB_FILE_NAME, MIGRATOR};
 
 
 // Creates the pool, runs migrations and seeds the default groups
@@ -53,7 +47,7 @@ pub async fn init_db() -> Result<Arc<SqlitePool>, String> {
 
 fn database_path() -> Result<PathBuf, String> {
     let data_dir = ensure_data_dir()?;
-    Ok(data_dir.join(DB_NAME))
+    Ok(data_dir.join(DB_FILE_NAME))
 }
 
 async fn create_default_group(pool: &SqlitePool) -> Result<(), String> {

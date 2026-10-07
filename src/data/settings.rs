@@ -1,11 +1,12 @@
 use std::fs;
 use std::path::PathBuf;
-use std::sync::{Mutex, OnceLock};
+use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
 
 use crate::data::ensure_data_dir;
 use crate::utils::logger::{log_debug, log_info, log_warn};
+use crate::constants::{SETTINGS_FILE_NAME, SETTINGS};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -84,10 +85,6 @@ impl Default for SettingsInfo {
     }
 }
 
-const SETTINGS_FILE: &str = "settings.json";
-static SETTINGS: OnceLock<Mutex<SettingsInfo>> = OnceLock::new();
-
-
 // Load settings to cache
 pub fn load_settings() -> Result<(), String> {
     // Path
@@ -128,7 +125,7 @@ pub fn load_settings() -> Result<(), String> {
 
 
 fn settings_path() -> Result<PathBuf, String> {
-    Ok(ensure_data_dir()?.join(SETTINGS_FILE))
+    Ok(ensure_data_dir()?.join(SETTINGS_FILE_NAME))
 }
 
 fn cache() -> &'static Mutex<SettingsInfo> {

@@ -1,7 +1,8 @@
 use std::sync::Arc;
 use sqlx::{FromRow, SqlitePool};
 
-use super::group::{FAVOURITES_GROUP_ID, RECENT_GROUP_ID};
+use crate::constants::{FAVOURITES_GROUP_ID, RECENT_GROUP_ID, RECENT_ITEMS_LIMIT};
+
 
 #[derive(Debug, Clone, FromRow)]
 pub struct ItemRow {
@@ -15,8 +16,6 @@ pub struct ItemRow {
     pub last_used_at: Option<String>,
     pub created_at: String,
 }
-
-const RECENT_ITEMS_LIMIT: i32 = 50;
 
 pub async fn load_items_for_group(
     pool: Arc<SqlitePool>,

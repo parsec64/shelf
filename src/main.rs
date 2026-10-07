@@ -4,6 +4,7 @@ pub mod services;
 pub mod utils;
 pub mod components;
 pub mod icon;
+pub mod constants;
 
 use iced::{Font, application, window};
 use dotenv::dotenv;

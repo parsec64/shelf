@@ -2,14 +2,9 @@ pub mod db;
 pub mod settings;
 
 use std::{fs, path::PathBuf};
-use std::sync::OnceLock;
 use directories::BaseDirs;
 
-
-const DATA_DIR_NAME: &str = ".shelf";
-
-// Set once at runtime
-static DATA_DIR_PATH: OnceLock<PathBuf> = OnceLock::new();
+use crate::constants::{DATA_DIR_PATH, DATA_DIR_NAME};
 
 
 // Returns the data directory for the application

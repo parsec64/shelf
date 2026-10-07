@@ -6,6 +6,7 @@ use crate::components::status_bar::{StatusMessage, StatusType, status_bar_view};
 use crate::data::ensure_data_dir;
 use crate::data::settings::{AppScreen, AppTheme, SettingsInfo, get_settings, load_settings, set_settings};
 use crate::utils::logger::log_error;
+use crate::constants::APP_VERSION;
 
 
 impl Settings {
@@ -26,7 +27,7 @@ impl Settings {
         container(
             column![
                 // Navigator
-                self.navigator_view(), 
+                self.navigator_view(),
 
                 // Setting list
                 container(
@@ -81,7 +82,7 @@ impl Settings {
                                     String::new()
                                 }
                             };
-                            self.version = "Version 0.1.0".to_string();
+                            self.version = format!("Version {}", APP_VERSION).to_string();
                             Task::none()
                         },
                         Err(e) => {

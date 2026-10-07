@@ -10,15 +10,14 @@ use crate::data::settings::{AppScreen, AppTheme};
 use crate::data::db::init_db;
 use crate::components::loading_screen::loading_screen_view;
 use crate::utils::logger::{log_debug, log_error};
+use crate::constants::APP_NAME;
 
-
-const APP_TITLE: &str = "Shelf";
 
 impl App<'static> {
     pub fn new() -> (Self, Task<AppMessage>) {
         (
             Self {
-                title: APP_TITLE,
+                title: APP_NAME,
                 theme: AppTheme::Dark,
                 screen: AppScreen::Home,
 

@@ -1,6 +1,9 @@
 use std::sync::Arc;
 use sqlx::{FromRow, SqlitePool};
 
+use crate::constants::{DEFAULT_GROUP_ID, FAVOURITES_GROUP_ID, RECENT_GROUP_ID};
+
+
 #[derive(Debug, Clone, FromRow)]
 pub struct GroupRow {
     pub id: i32,
@@ -9,10 +12,6 @@ pub struct GroupRow {
     pub item_count: i32,
 }
 
-// Special groups doesn't exists in the database and are created dynamically
-pub const DEFAULT_GROUP_ID: i32 = 1;
-pub const RECENT_GROUP_ID: i32 = -1;
-pub const FAVOURITES_GROUP_ID: i32 = -2;
 
 pub async fn load_groups(pool: Arc<SqlitePool>) -> Result<Vec<GroupRow>, String> {
     // Load regular groups
