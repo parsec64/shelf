@@ -1,6 +1,6 @@
 mod dashboard;
 mod navigator;
-mod group_navigator;
+mod sidebar;
 mod group;
 mod item_editor;
 mod search_result;
@@ -28,7 +28,7 @@ pub struct Dashboard {
     pub search_query: String,
     pub search_result: Option<Vec<SearchResult>>,
 
-    pub group_navigator_open: bool,
+    pub sidebar_open: bool,
     pub group_description_open: bool,
 
     pub status_message: StatusMessage,

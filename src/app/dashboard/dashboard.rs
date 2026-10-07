@@ -31,7 +31,7 @@ impl Dashboard {
                 item_editor: None,
                 search_query: String::new(),
                 search_result: None,
-                group_navigator_open: true,
+                sidebar_open: true,
                 group_description_open: false,
                 status_message: StatusMessage::default(),
                 pool: pool,
@@ -52,7 +52,7 @@ impl Dashboard {
                     // Group view
                     row![
                         // Group list
-                        self.group_navigator_view(),
+                        self.sidebar_view(),
 
                         // Group
                         self.group_view(),
@@ -184,7 +184,7 @@ impl Dashboard {
                     ))
             },
             DashboardMessage::SetGroupNavigatoOpen =>{
-                self.group_navigator_open = !self.group_navigator_open;
+                self.sidebar_open = !self.sidebar_open;
                 Task::none()
             },
             DashboardMessage::SetGroupHovered(id) => {

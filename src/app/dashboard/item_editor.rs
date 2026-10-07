@@ -101,11 +101,11 @@ impl Dashboard {
                                     None => space().into(),
                                 },
                                 match &editor.content {
-                                    Some(content) => Self::text_editor_view("Content", content, &false, |action| DashboardMessage::SetItemEditorContent(action)),
+                                    Some(content) => Self::text_editor_view("Content", content, true, &false, |action| DashboardMessage::SetItemEditorContent(action)),
                                     None => space().into(),
                                 },
                                 match &editor.description {
-                                    Some(description) => Self::text_editor_view("Description (optional)", description, &false, |action| DashboardMessage::SetItemEditorDescription(action)),
+                                    Some(description) => Self::text_editor_view("Description (optional)", description, false, &false, |action| DashboardMessage::SetItemEditorDescription(action)),
                                     None => space().into(),
                                 },
                                 match &editor.tags {
@@ -238,7 +238,7 @@ impl Dashboard {
             .into()
     }
 
-    fn text_editor_view<'a, F>(placeholder: &'a str, content: &'a Content, error: &'a bool, on_action: F) -> Element<'a, DashboardMessage>
+    fn text_editor_view<'a, F>(placeholder: &'a str, content: &'a Content, highlight: bool, error: &'a bool, on_action: F) -> Element<'a, DashboardMessage>
         where F: Fn(Action) -> DashboardMessage + 'a
     {
         text_editor(content)
@@ -248,6 +248,13 @@ impl Dashboard {
             .height(125.0)
             .padding(10)
             .wrapping(Wrapping::WordOrGlyph)
+            .highlight(
+                match highlight {
+                    true => "bash",
+                    false => "plain_text",
+                },
+                iced_highlighter::Theme::Base16Eighties
+            )
             .style(move |theme: &Theme, _| text_editor::Style {
                 background: Background::Color(theme.palette().primary.scale_alpha(0.1)),
                 border: Border {

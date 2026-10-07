@@ -9,17 +9,17 @@ use crate::utils::formatting::clamp_name;
 
 
 impl Dashboard {
-    pub fn group_navigator_view(&self) -> Element<'_, DashboardMessage> {
+    pub fn sidebar_view(&self) -> Element<'_, DashboardMessage> {
         container(
             column![
                 // Collapse side bar
                 row![
-                    match self.group_navigator_open {
+                    match self.sidebar_open {
                         true => space().width(Length::Fill),
                         false => space(),
                     },
 
-                    button(match self.group_navigator_open {
+                    button(match self.sidebar_open {
                         true => icon::panel_left_close().size(sv(20.0)),
                         false => icon::panel_left_open().size(sv(20.0)),
                     })
@@ -46,7 +46,7 @@ impl Dashboard {
                                     ..Default::default()
                                 }),
 
-                            text(match self.group_navigator_open {
+                            text(match self.sidebar_open {
                                 true => "Group",
                                 false => "",
                             })
@@ -79,14 +79,14 @@ impl Dashboard {
                         self.group_list.iter().fold(
                             Column::new()
                                 .spacing(10),
-                            |column, group| column.push(Self::group_card_view(group, group.id == self.group_selected.id, &self.group_navigator_open)),
+                            |column, group| column.push(Self::group_card_view(group, group.id == self.group_selected.id, &self.sidebar_open)),
                         )
                     )
                 )
             ]
         )
         .height(Length::Fill)
-        .width(match self.group_navigator_open {
+        .width(match self.sidebar_open {
             true => sv(250.0) as u32,
             false => 70,
         })
@@ -132,7 +132,7 @@ impl Dashboard {
                             true => row![
                                 // Group title
                                 text(clamp_name(name, 13))
-                                    .size(sv_16())
+                                    .size(sv(15.0))
                                     .style(|theme: &Theme| text::Style {
                                         color: Some(theme.palette().text),
                                         ..Default::default()

@@ -334,7 +334,7 @@ impl Dashboard {
                                     .size(sv_20())
                                     .color(Color::from_rgb(0.3, 0.4, 0.6)),
 
-                                // Name of script / Content of command
+                                // Name of script / Content of command TODO: highlight this
                                 text(match item.item_type {
                                     ItemType::Command => content,
                                     ItemType::Script => name,
