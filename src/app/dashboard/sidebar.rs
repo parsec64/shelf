@@ -1,9 +1,9 @@
 use iced::{Alignment, Background, Border, Color, Element, Length, Padding, Theme};
 use iced::widget::{Column, button, center_x, column, container, mouse_area, row, scrollable, space, text};
+use iced_phosphor::{regular, fill};
 
 use super::GroupInfo;
 use crate::app::dashboard::{Dashboard, DashboardMessage};
-use crate::icon;
 use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
 
@@ -19,10 +19,7 @@ impl Dashboard {
                         false => space(),
                     },
 
-                    button(match self.sidebar_open {
-                        true => icon::panel_left_close().size(sv(20.0)),
-                        false => icon::panel_left_open().size(sv(20.0)),
-                    })
+                    button(regular::sidebar_simple().size(sv(20.0)))
                     .on_press(DashboardMessage::SetGroupNavigatoOpen)
                     .padding([0, 8])
                     .style(|theme, _| button::Style {
@@ -39,7 +36,7 @@ impl Dashboard {
                 button(
                     center_x(
                         row![
-                            icon::plus()
+                            regular::plus()
                                 .size(sv(20.0))
                                 .style(|theme| text::Style {
                                     color: Some(theme.palette().success),
@@ -116,13 +113,13 @@ impl Dashboard {
                     row![
                         // Group icon
                         match name {
-                            "Recent" => icon::history()
+                            "Recent" => fill::clock_counter_clockwise()
                                 .size(sv_20())
                                 .color(Color::from_rgb(0.5, 0.9, 0.9)),
-                            "Favourites" => icon::star()
+                            "Favourites" => fill::star()
                                 .size(sv_20())
                                 .color(Color::from_rgb(0.5, 0.9, 0.9)),
-                            _ => icon::group_box()
+                            _ => fill::stack()
                                 .size(sv_20())
                                 .color(Color::from_rgb(1.0, 0.7, 0.4)),
                         },
@@ -149,8 +146,8 @@ impl Dashboard {
                                     true => container(
                                         // Trash
                                         button(
-                                            icon::trash()
-                                                .size(sv(14.0))
+                                            fill::trash()
+                                                .size(sv(15.0))
                                         )
                                         .on_press(DashboardMessage::OpenDeleteGroupBox(group.clone()))
                                         .padding(0)

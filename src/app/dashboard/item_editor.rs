@@ -2,12 +2,13 @@ use iced::theme::Palette;
 use iced::widget::{Row, center, center_y};
 use iced::{Background, Border, Color, Element, Length, Padding, Theme, color};
 use iced::widget::{button, column, container, row, space, text, text::Wrapping, text_editor, text_input, text_editor::{Content, Action}};
+use iced_phosphor::regular;
 
 use super::{Dashboard, DashboardMessage};
 use crate::components::modal::modal_view;
-use crate::icon;
 use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
+
 
 #[derive(Debug, Clone, Default)]
 pub struct ItemEditor {
@@ -290,7 +291,7 @@ impl Dashboard {
                         .color(color!(0xF8F8F2))
                         .size(sv(13.0)),
 
-                    button(icon::x().size(sv(15.0)))
+                    button(regular::x().size(sv(15.0)))
                         .on_press(on_remove())
                         .padding(0)
                         .style(|theme, _| button::Style {
@@ -354,7 +355,7 @@ impl Dashboard {
                     }),
 
                 // Add
-                button(center_y(icon::plus().size(sv_20())))
+                button(center_y(regular::plus().size(sv_20())))
                 .on_press(on_add)
                 .height(sv(40.0)) // ISSUE: Approximate height that fits the input field
                 .style(|theme, _| button::Style {

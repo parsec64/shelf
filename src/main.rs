@@ -3,10 +3,10 @@ pub mod data;
 pub mod services;
 pub mod utils;
 pub mod components;
-pub mod icon;
 pub mod constants;
 
 use iced::{Font, application, window};
+use iced_phosphor::{FONT_REGULAR, FONT_BOLD, FONT_FILL};
 use dotenv::dotenv;
 
 use app::App;
@@ -25,7 +25,9 @@ fn main() -> iced::Result {
         )
         .title(App::title)
         .theme(App::theme)
-        .font(icon::FONT)
+        .font(FONT_REGULAR)
+        .font(FONT_BOLD)
+        .font(FONT_FILL)
         .default_font(Font::MONOSPACE)
         .centered()
         .run()

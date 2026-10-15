@@ -1,9 +1,9 @@
 use iced::widget::{button, container, row, text};
 use iced::{Alignment, Border, Element, Length, Theme};
+use iced_phosphor::regular;
 
 use super::{Settings, SettingsMessage};
 use crate::data::settings::AppScreen;
-use crate::icon;
 use crate::utils::font_size::sv;
 
 
@@ -12,7 +12,7 @@ impl Settings {
         container(
             row![
                 // Back button
-                button(icon::chevron_left().size(sv(20.0)))
+                button(regular::caret_left().size(sv(20.0)))
                     .padding(2.5)
                     .style(|theme: &Theme, _| {
                         button::Style {

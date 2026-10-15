@@ -1,9 +1,9 @@
 use iced::theme::Palette;
 use iced::{Border, Color, Element, Length, Theme};
 use iced::widget::{button, center, container, row, space, text};
+use iced_phosphor::regular;
 
-use crate::icon;
-use crate::utils::font_size::{sv, sv_16};
+use crate::utils::font_size::sv;
 
 
 #[derive(Debug, Clone, Default)]
@@ -47,7 +47,7 @@ pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessag
                     space()
                         .width(Length::Fill),
 
-                    button(center(icon::circle_x().size(sv_16())))
+                    button(center(regular::x_circle().size(sv(17.0))))
                         .on_press(on_clear)
                         .padding(0)
                         .width(20)

@@ -1,10 +1,10 @@
 use iced::widget::{Column, scrollable};
 use iced::{Alignment, Background, Border, Element, Length, Theme};
 use iced::widget::{button, column, container, row, space, text, text::Wrapping};
+use iced_phosphor::{fill, regular};
 
 use super::{Dashboard, DashboardMessage};
 use crate::components::modal::modal_view;
-use crate::icon;
 use crate::utils::font_size::{sv, sv_16};
 
 
@@ -64,8 +64,8 @@ impl Dashboard {
             item.id,
             item.name.as_str(),
             match item.item_type.as_str() {
-                "command" => icon::terminal(),
-                _ => icon::code_xml(),
+                "command" => regular::terminal(),
+                _ => regular::code(),
             },
             item.group_id,
             item.group_name.as_str(),
@@ -87,7 +87,7 @@ impl Dashboard {
                 space()
                     .width(Length::Fill),
 
-                icon::group_box()
+                fill::stack()
                     .size(sv(14.0))
                     .style(|theme: &Theme| text::Style {
                         color: Some(theme.palette().primary),

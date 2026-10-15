@@ -2,9 +2,9 @@ use iced::font::{Family, Style};
 use iced::widget::text::{Span, Wrapping};
 use iced::widget::{Column, Row, button, center, center_x, column, container, mouse_area, rich_text, row, scrollable, space, text};
 use iced::{Alignment, Background, Border, Color, Element, Font, Length, Theme, color};
+use iced_phosphor::{fill, regular};
 
 use crate::app::dashboard::{Dashboard, DashboardMessage, ItemFilter, ItemInfo, ItemType};
-use crate::icon;
 use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
 
@@ -31,70 +31,43 @@ impl Dashboard {
                     // ISSUE: Filters are ugly as sh*t (No difference than rest of the app though
                     row![
                         // Command filter
-                        button(icon::terminal().size(sv_16()))
-                        .padding([0, 3])
-                        .on_press(DashboardMessage::SetFilter(ItemFilter {
-                            command: !self.item_filter.command,
-                            ..self.item_filter
-                        }))
-                        .style(|theme, _| button::Style {
-                            background: None,
-                            text_color: theme.palette().primary,
-                            border: match self.item_filter.command {
-                                true => Border {
-                                    width: 2.0,
-                                    color: theme.palette().primary.scale_alpha(0.5),
-                                    radius: 4.into(),
-                                },
-                                false => Border::default(),
-                            },
-                            ..Default::default()
-                        }),
+                        button(regular::terminal().size(sv_20()))
+                            .padding([0, 3])
+                            .on_press(DashboardMessage::SetFilter(ItemFilter {
+                                command: !self.item_filter.command,
+                                ..self.item_filter
+                            }))
+                            .style(|theme, _| button::Style {
+                                background: None,
+                                text_color: theme.palette().primary,
+                                ..Default::default()
+                            }),
 
                         // Script filter
-                        button(icon::code_xml().size(sv_16()))
-                        .padding([0, 3])
-                        .on_press(DashboardMessage::SetFilter(ItemFilter {
-                            script: !self.item_filter.script,
-                            ..self.item_filter
-                        }))
-                        .style(|theme, _| button::Style {
-                            background: None,
-                            text_color: theme.palette().primary,
-                            border: match self.item_filter.script {
-                                true => Border {
-                                    width: 2.0,
-                                    color: theme.palette().primary.scale_alpha(0.5),
-                                    radius: 4.into(),
-                                },
-                                false => Border::default(),
-                            },
-                            ..Default::default()
-                        }),
+                        button(regular::code().size(sv_20()))
+                            .padding([0, 3])
+                            .on_press(DashboardMessage::SetFilter(ItemFilter {
+                                script: !self.item_filter.script,
+                                ..self.item_filter
+                            }))
+                            .style(|theme, _| button::Style {
+                                background: None,
+                                text_color: theme.palette().primary,
+                                ..Default::default()
+                            }),
 
                         // Alphabetical filter
-                        button(
-                            icon::a_large_small()
-                                .size(sv_16())
-                        )
-                        .padding([0, 3])
-                        .on_press(DashboardMessage::SetFilter(ItemFilter {
-                            alphabetical: !self.item_filter.alphabetical,
-                            ..self.item_filter
-                        }))
-                        .style(|theme, _| button::Style {
-                            background: None,
-                            text_color: theme.palette().primary,
-                            border: match self.item_filter.alphabetical {
-                                true => Border {
-                                    width: 2.0,
-                                    color: theme.palette().primary.scale_alpha(0.5),
-                                    radius: 4.into(),
-                                },
-                                false => Border::default(),
-                            },
-                            ..Default::default()
-                        })
+                        button(regular::funnel_simple().size(sv_20()))
+                            .padding([0, 3])
+                            .on_press(DashboardMessage::SetFilter(ItemFilter {
+                                alphabetical: !self.item_filter.alphabetical,
+                                ..self.item_filter
+                            }))
+                            .style(|theme, _| button::Style {
+                                background: None,
+                                text_color: theme.palette().primary,
+                                ..Default::default()
+                            })
                     ]
                     .spacing(15),
 
@@ -108,7 +81,7 @@ impl Dashboard {
                             // Edit group
                             match self.group_selected.name.as_str() != "Default" {
                                 true => container(
-                                    button(center(icon::pen().size(sv(15.0))))
+                                    button(center(fill::pencil_simple().size(sv_16())))
                                         .on_press(DashboardMessage::OpenEditGroupBox(self.group_selected.clone()))
                                         .height(Length::Shrink)
                                         .width(Length::Shrink)
@@ -127,7 +100,7 @@ impl Dashboard {
                             // Add new command
                             button(
                                 row![
-                                    icon::plus()
+                                    regular::plus()
                                         .size(sv_20())
                                         .style(|theme| text::Style {
                                             color: Some(theme.palette().success),
@@ -161,7 +134,7 @@ impl Dashboard {
                             // Add new script
                             button(
                                 row![
-                                    icon::plus()
+                                    regular::plus()
                                         .size(sv_20())
                                         .style(|theme| text::Style {
                                             color: Some(theme.palette().success),
@@ -227,8 +200,8 @@ impl Dashboard {
                             match self.group_selected.description.as_str() {
                                 "" => container(space()),
                                 _ => container(button(match self.group_description_open {
-                                        true => icon::chevron_up().size(sv_20()),
-                                        false => icon::chevron_down().size(sv_20()),
+                                        true => regular::caret_up().size(sv_20()),
+                                        false => regular::caret_down().size(sv_20()),
                                     })
                                     .on_press(DashboardMessage::SetGroupDescriptionOpen)
                                     .padding([0, 5])
@@ -295,10 +268,10 @@ impl Dashboard {
         );
 
         let icon = match copied {
-            true => icon::copy(),
+            true => regular::copy(),
             false => match item.item_type {
-                ItemType::Command => icon::terminal(),
-                ItemType::Script => icon::code_xml(),
+                ItemType::Command => regular::terminal(),
+                ItemType::Script => regular::code(),
             },
         };
 
@@ -401,7 +374,7 @@ impl Dashboard {
                     // Favourite, Edit, Delete buttons
                     column![
                         // Run
-                        button(icon::play().size(sv(15.0)))
+                        button(fill::play().size(sv_16()))
                             .on_press(DashboardMessage::RunCommand(content.to_string()))
                             .style(|theme, _| button::Style {
                                 text_color: theme.palette().success,
@@ -412,7 +385,7 @@ impl Dashboard {
                         match is_favourite {
                             // If the item is a favourite, show the star icon
                             true => container(
-                                button(icon::star().size(sv_16()))
+                                button(fill::star().size(sv_16()))
                                     .on_press(DashboardMessage::SetItemFavourite(id))
                                     .style(|theme, _| button::Style {
                                         text_color: match theme.extended_palette().is_dark {
@@ -425,7 +398,7 @@ impl Dashboard {
                             // If the item is not a favourite, hide the star icon but show the empty star icon on hover
                             false => match hovered {
                                 true => container(
-                                    button(icon::star().size(sv_16()))
+                                    button(regular::star().size(sv_16()))
                                         .on_press(DashboardMessage::SetItemFavourite(id))
                                         .style(|theme, _| button::Style {
                                             text_color: theme.palette().primary,
@@ -440,14 +413,14 @@ impl Dashboard {
                         // Show the edit, delete buttons on hover
                         match hovered {
                             true => column![
-                                button(icon::pen().size(sv(15.0)))
+                                button(fill::pencil_simple().size(sv_16()))
                                     .on_press(DashboardMessage::OpenEditItemBox(item.clone()))
                                     .style(|theme, _| button::Style {
                                         text_color: theme.palette().primary,
                                         ..Default::default()
                                     }),
 
-                                button(icon::trash().size(sv(15.0)))
+                                button(fill::trash().size(sv_16()))
                                     .on_press(DashboardMessage::OpenDeleteItemBox(item.clone()))
                                     .style(|theme, _| button::Style {
                                         text_color: theme.palette().danger,
