@@ -1,4 +1,4 @@
-use iced::{Alignment, Background, Border, Color, Element, Length, Padding, Theme};
+use iced::{Alignment, Background, Border, Element, Length, Padding, Theme, color};
 use iced::widget::{Column, button, center_x, column, container, mouse_area, row, scrollable, space, text};
 use iced_phosphor::{regular, fill};
 
@@ -115,13 +115,13 @@ impl Dashboard {
                         match name {
                             "Recent" => fill::clock_counter_clockwise()
                                 .size(sv_20())
-                                .color(Color::from_rgb(0.5, 0.9, 0.9)),
+                                .color(color!(0x8be9fd)),
                             "Favourites" => fill::star()
                                 .size(sv_20())
-                                .color(Color::from_rgb(0.5, 0.9, 0.9)),
+                                .color(color!(0x8be9fd)),
                             _ => fill::stack()
                                 .size(sv_20())
-                                .color(Color::from_rgb(1.0, 0.7, 0.4)),
+                                .color(color!(0xffb86c)),
                         },
 
                         // Group details

@@ -14,7 +14,7 @@ impl Dashboard {
         container(
             column![
                 // Fancy group name
-                // ISSUE: Mismathcing colors on light theme
+                // ISSUE: Green color doesn't match theme
                 rich_text![
                     Span::<&str>::new("user@shelf").color(color!(0x50FA7B)),
                     Span::new(":"),
@@ -28,46 +28,57 @@ impl Dashboard {
                 // Group controls and filters
                 row![
                     // Filters
-                    // ISSUE: Filters are ugly as sh*t (No difference than rest of the app though
                     row![
                         // Command filter
-                        button(regular::terminal().size(sv_20()))
-                            .padding([0, 3])
-                            .on_press(DashboardMessage::SetFilter(ItemFilter {
-                                command: !self.item_filter.command,
-                                ..self.item_filter
-                            }))
-                            .style(|theme, _| button::Style {
-                                background: None,
-                                text_color: theme.palette().primary,
-                                ..Default::default()
-                            }),
+                        button(match self.item_filter.command {
+                            true => fill::terminal(),
+                            false => regular::terminal(),
+                        }
+                        .size(sv_20()))
+                        .padding([0, 3])
+                        .on_press(DashboardMessage::SetFilter(ItemFilter {
+                            command: !self.item_filter.command,
+                            ..self.item_filter
+                        }))
+                        .style(|theme, _| button::Style {
+                            background: None,
+                            text_color: theme.palette().primary,
+                            ..Default::default()
+                        }),
 
                         // Script filter
-                        button(regular::code().size(sv_20()))
-                            .padding([0, 3])
-                            .on_press(DashboardMessage::SetFilter(ItemFilter {
-                                script: !self.item_filter.script,
-                                ..self.item_filter
-                            }))
-                            .style(|theme, _| button::Style {
-                                background: None,
-                                text_color: theme.palette().primary,
-                                ..Default::default()
-                            }),
+                        button(match self.item_filter.script {
+                            true => fill::code(),
+                            false => regular::code(),
+                        }
+                        .size(sv_20()))
+                        .padding([0, 3])
+                        .on_press(DashboardMessage::SetFilter(ItemFilter {
+                            script: !self.item_filter.script,
+                            ..self.item_filter
+                        }))
+                        .style(|theme, _| button::Style {
+                            background: None,
+                            text_color: theme.palette().primary,
+                            ..Default::default()
+                        }),
 
                         // Alphabetical filter
-                        button(regular::funnel_simple().size(sv_20()))
-                            .padding([0, 3])
-                            .on_press(DashboardMessage::SetFilter(ItemFilter {
-                                alphabetical: !self.item_filter.alphabetical,
-                                ..self.item_filter
-                            }))
-                            .style(|theme, _| button::Style {
-                                background: None,
-                                text_color: theme.palette().primary,
-                                ..Default::default()
-                            })
+                        button(match self.item_filter.alphabetical {
+                            true => fill::funnel_simple(),
+                            false => regular::funnel_simple(),
+                        }
+                        .size(sv_20()))
+                        .padding([0, 3])
+                        .on_press(DashboardMessage::SetFilter(ItemFilter {
+                            alphabetical: !self.item_filter.alphabetical,
+                            ..self.item_filter
+                        }))
+                        .style(|theme, _| button::Style {
+                            background: None,
+                            text_color: theme.palette().primary,
+                            ..Default::default()
+                        })
                     ]
                     .spacing(15),
 
@@ -81,7 +92,7 @@ impl Dashboard {
                             // Edit group
                             match self.group_selected.name.as_str() != "Default" {
                                 true => container(
-                                    button(center(fill::pencil_simple().size(sv_16())))
+                                    button(center(fill::pencil_simple().size(sv_20())))
                                         .on_press(DashboardMessage::OpenEditGroupBox(self.group_selected.clone()))
                                         .height(Length::Shrink)
                                         .width(Length::Shrink)
