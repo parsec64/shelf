@@ -20,7 +20,7 @@ impl Dashboard {
                     },
 
                     button(regular::sidebar_simple().size(sv(20.0)))
-                    .on_press(DashboardMessage::SetGroupNavigatoOpen)
+                    .on_press(DashboardMessage::SetSidebarOpen)
                     .padding([0, 8])
                     .style(|theme, _| button::Style {
                         text_color: theme.palette().primary,

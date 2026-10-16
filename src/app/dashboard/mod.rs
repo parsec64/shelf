@@ -93,7 +93,7 @@ pub enum DashboardMessage {
     ClearSearchResult,
     ScrollToSearchResult(i32, i32),
 
-    SetGroupNavigatoOpen,
+    SetSidebarOpen,
     SetGroupHovered(i32),
 
     SetGroupDescriptionOpen,

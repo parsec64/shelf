@@ -183,7 +183,7 @@ impl Dashboard {
                         )
                     ))
             },
-            DashboardMessage::SetGroupNavigatoOpen =>{
+            DashboardMessage::SetSidebarOpen =>{
                 self.sidebar_open = !self.sidebar_open;
                 Task::none()
             },
