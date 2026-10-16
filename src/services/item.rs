@@ -31,6 +31,8 @@ pub async fn load_items_for_group(
         return load_items_for_recents(pool.clone(), commands, scripts, RECENT_ITEMS_LIMIT).await;
     }
 
+    let (commands, scripts) = reform_filter(commands, scripts);
+
     // Fetch items
     let rows = sqlx::query_as::<_, ItemRow>(
         r#"
@@ -67,6 +69,8 @@ pub async fn load_items_for_favourites(
     commands: bool,
     scripts: bool,
 ) -> Result<Vec<(ItemRow, Vec<String>)>, String> {
+    let (commands, scripts) = reform_filter(commands, scripts);
+
     let rows = sqlx::query_as::<_, ItemRow>(
         r#"
         SELECT id, group_id, item_type, name, content, description,
@@ -102,6 +106,8 @@ pub async fn load_items_for_recents(
     scripts: bool,
     limit: i32,
 ) -> Result<Vec<(ItemRow, Vec<String>)>, String> {
+    let (commands, scripts) = reform_filter(commands, scripts);
+
     let rows = sqlx::query_as::<_, ItemRow>(
         r#"
         SELECT id, group_id, item_type, name, content, description,
@@ -341,4 +347,12 @@ fn validate_fields(
     }
 
     Ok((item_type, name, content, description, tags))
+}
+
+fn reform_filter(commands: bool, scripts: bool) -> (bool, bool) {
+    if !commands && !scripts {
+        (true, true)
+    } else {
+        (commands, scripts)
+    }
 }

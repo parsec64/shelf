@@ -401,7 +401,7 @@ impl Dashboard {
                                     .style(|theme, _| button::Style {
                                         text_color: match theme.extended_palette().is_dark {
                                             true => color!(0xF1FA8C),
-                                            false => color!(0xE77B00),
+                                            false => color!(0xffb86c)
                                         },
                                         ..Default::default()
                                     })

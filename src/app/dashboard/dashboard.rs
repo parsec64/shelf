@@ -23,9 +23,9 @@ impl Dashboard {
                 group_list: Vec::new(),
                 group_selected: GroupInfo::default(),
                 item_filter: ItemFilter {
-                    command: true,
-                    script: true,
-                    alphabetical: true,
+                    command: false,
+                    script: false,
+                    alphabetical: false,
                 },
                 item_list: Vec::new(),
                 item_editor: None,
@@ -117,7 +117,7 @@ impl Dashboard {
                     },
                 }
                 if self.item_filter.alphabetical {
-                    self.item_list.sort_by(|a, b| a.name.cmp(&b.name));
+                    self.alphabetical_filter();
                 }
                 Task::none()
             },
@@ -576,6 +576,16 @@ impl Dashboard {
             },
             DashboardMessage::None => Task::none(),
         }
+    }
+
+    fn alphabetical_filter(&mut self) {
+        self.item_list.sort_by_cached_key(|item| {
+            let key: &str = match item.item_type {
+                ItemType::Command => &item.content,
+                ItemType::Script => item.name.as_deref().unwrap_or(&item.content),
+            };
+            key.to_lowercase()
+        });
     }
 
     fn group_row_to_group_info(groups: Vec<GroupRow>) -> Vec<GroupInfo> {
