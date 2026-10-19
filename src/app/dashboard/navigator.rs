@@ -41,6 +41,7 @@ impl Dashboard {
                             // Input
                             text_input("Search", &self.search_query)
                                 .on_input(|query| DashboardMessage::SetSearchQuery(Some(query)))
+                                .on_submit(DashboardMessage::Search)
                                 .size(sv_16())
                                 .style(|theme: &Theme, _| text_input::Style {
                                     background: Background::Color(theme.palette().background).scale_alpha(0.0),

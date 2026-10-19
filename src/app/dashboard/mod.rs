@@ -98,10 +98,12 @@ pub enum DashboardMessage {
 
     SetGroupDescriptionOpen,
     SetItemFavourite(i32),
+    SetItemFavouriteDone(i32, bool),
     SetItemUsed(i32),
     SetItemHovered(i32),
     HighlightItem(i32),
     CopyItemContent(i32),
+    CopyItemContentDone(i32),
     RunCommand(String),
 
     OpenNewGroupBox,

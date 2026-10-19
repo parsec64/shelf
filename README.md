@@ -3,7 +3,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.88+-orange.svg?style=flat-square&logo=rust)](https://www.rust-lang.org/)
 [![iced](https://img.shields.io/badge/gui-iced%200.14-blue.svg?style=flat-square)](https://iced.rs/)
 [![SQLite](https://img.shields.io/badge/db-sqlite-003B57.svg?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
-[![version](https://img.shields.io/badge/version-0.2.0-brightgreen.svg?style=flat-square)](Cargo.toml)
+[![version](https://img.shields.io/badge/version-0.1.0-brightgreen.svg?style=flat-square)](Cargo.toml)
 [![platform](https://img.shields.io/badge/platform-Linux-FCC624.svg?style=flat-square&logo=linux&logoColor=black)]()
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 

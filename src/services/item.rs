@@ -341,7 +341,7 @@ fn validate_fields(
     }
 
     for tag in &tags {
-        if tag.len() > 20 {
+        if tag.chars().count() > 20 {
             return Err(format!("Tag '{}' is too long (max 20 characters)", tag).into());
         }
     }

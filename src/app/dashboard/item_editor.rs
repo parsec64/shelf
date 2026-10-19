@@ -10,6 +10,7 @@ use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
 
 
+// TODO: implement helper functions for each dialog type
 #[derive(Debug, Clone, Default)]
 pub struct ItemEditor {
     pub id: Option<i32>,

@@ -160,7 +160,12 @@ impl Dashboard {
             DashboardMessage::SetSearchResult(result) => {
                 match result {
                     Ok(result) => self.search_result = Some(Self::search_row_to_search_result(result)),
-                    Err(_) => (),
+                    Err(e) => {
+                        log_error(&format!("Search failed: {}", e));
+                        return Task::done(DashboardMessage::SetStatusMessage(
+                            StatusMessage::new(Some(format!("Search failed ({})", e)), StatusType::Error)
+                        ));
+                    },
                 }
                 Task::none()
             },
@@ -195,8 +200,6 @@ impl Dashboard {
                 group.hovered = !group.hovered;
                 Task::none()
             },
-
-
             DashboardMessage::SetGroupDescriptionOpen => {
                 self.group_description_open = !self.group_description_open;
                 Task::none()
@@ -208,15 +211,23 @@ impl Dashboard {
                     None => return Task::none(),
                 };
 
-                item.is_favourite = !item.is_favourite; // ISSUE: This must happen only after successfull result
+                let favourite = !item.is_favourite;
 
                 Task::perform(
-                    update_item_favourite(pool, id, !item.is_favourite),
-                    |result| match result {
-                        Ok(_) => DashboardMessage::None,
-                        Err(_) => DashboardMessage::None,
+                    update_item_favourite(pool, id, favourite),
+                    move |result| match result {
+                        Ok(()) => DashboardMessage::SetItemFavouriteDone(id, favourite),
+                        Err(e) => DashboardMessage::SetStatusMessage(
+                            StatusMessage::new(Some(format!("Failed to update favourite ({})", e)), StatusType::Error)
+                        ),
                     },
                 )
+            },
+            DashboardMessage::SetItemFavouriteDone(id, value) => {
+                if let Some(item) = self.find_item(id) {
+                    item.is_favourite = value;
+                }
+                Task::none()
             },
             DashboardMessage::SetItemUsed(id) => {
                 let pool = self.pool.clone();
@@ -252,12 +263,15 @@ impl Dashboard {
                     None => return Task::none(),
                 };
 
-                item.copied = true; // ISSUE: This must happen after copying
-
-                Task::batch([
-                    clipboard::write(item.content.clone()),
-                    Task::done(DashboardMessage::SetItemUsed(item.id))
-                ])
+                clipboard::write(item.content.clone())
+                    .chain(Task::done(DashboardMessage::CopyItemContentDone(id)))
+            },
+            DashboardMessage::CopyItemContentDone(id) => {
+                if let Some(item) = self.find_item(id) {
+                    item.copied = true;
+                    return Task::done(DashboardMessage::SetItemUsed(item.id));
+                }
+                Task::none()
             },
             DashboardMessage::RunCommand(_command) => {
                 Task::done(DashboardMessage::SetStatusMessage(
@@ -415,21 +429,32 @@ impl Dashboard {
                 Task::none()
             },
             DashboardMessage::AddToItemEditorTags => {
-                match &mut self.item_editor {
-                    Some(editor) => {
-                        let tag = match &mut editor.tag {
-                            Some(tag) => tag,
-                            None => return Task::none()
-                        };
-                        match &mut editor.tags {
-                            Some(tags) => {
-                                tags.push(tag.clone());
-                                tag.clear();
-                            },
-                            None => ()
+                if let Some(editor) = &mut self.item_editor {
+                    let pending = editor.tag.as_deref().unwrap_or("").trim().to_string();
+
+                    // TODO: Move this check to a separate function
+
+                    // Ignore empty input
+                    if pending.is_empty() {
+                        return Task::none();
+                    }
+
+                    // Same limit as the service layer
+                    if pending.chars().count() > 20 {
+                        editor.error = Some(format!("Tag '{}' is too long (max 20 characters)", pending));
+                        return Task::none();
+                    }
+
+                    if let Some(tags) = &mut editor.tags {
+                        // Skip duplicates
+                        if !tags.iter().any(|t| *t == pending) {
+                            tags.push(pending);
                         }
-                    },
-                    None => ()
+                        if let Some(tag) = &mut editor.tag {
+                            tag.clear();
+                        }
+                        editor.error = None;
+                    }
                 }
                 Task::none()
             },

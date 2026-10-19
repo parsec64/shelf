@@ -24,7 +24,12 @@ pub async fn search_items(
         return Ok(vec![]);
     }
 
-    let pattern = format!("%{}%", query);
+    // Escape LIKE wildcards so '%' and '_' typed by the user match literally
+    let escaped = query
+        .replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_");
+    let pattern = format!("%{}%", escaped);
 
     sqlx::query_as::<_, SearchRow>(
         r#"
@@ -39,13 +44,13 @@ pub async fn search_items(
         INNER JOIN groups g ON g.id = i.group_id
         LEFT JOIN tags t ON t.item_id = i.id
         WHERE
-            i.content LIKE ? COLLATE NOCASE
-            OR IFNULL(i.name, '') LIKE ? COLLATE NOCASE
-            OR IFNULL(t.name, '') LIKE ? COLLATE NOCASE
+            i.content LIKE ? COLLATE NOCASE ESCAPE '\'
+            OR IFNULL(i.name, '') LIKE ? COLLATE NOCASE ESCAPE '\'
+            OR IFNULL(t.name, '') LIKE ? COLLATE NOCASE ESCAPE '\'
         ORDER BY
             CASE
-                WHEN IFNULL(i.name, '') LIKE ? COLLATE NOCASE THEN 0
-                WHEN i.content LIKE ? COLLATE NOCASE THEN 1
+                WHEN IFNULL(i.name, '') LIKE ? COLLATE NOCASE ESCAPE '\' THEN 0
+                WHEN i.content LIKE ? COLLATE NOCASE ESCAPE '\' THEN 1
                 ELSE 2
             END,
             g.name,
