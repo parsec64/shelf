@@ -21,6 +21,9 @@ pub struct App<'a: 'static> {
     home: Option<Home>,
     dashboard: Option<Dashboard>,
     settings: Option<Settings>,
+
+    // Set when startup (database init) fails, shown instead of an endless loading screen
+    init_error: Option<String>,
 }
 
 #[derive(Debug)]

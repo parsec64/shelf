@@ -9,6 +9,7 @@ use super::settings::Settings;
 use crate::data::settings::{AppScreen, AppTheme};
 use crate::data::db::init_db;
 use crate::components::loading_screen::loading_screen_view;
+use crate::components::error_screen::error_screen_view;
 use crate::utils::logger::{log_debug, log_error};
 use crate::constants::APP_NAME;
 
@@ -24,6 +25,8 @@ impl App<'static> {
                 home: None,
                 dashboard: None,
                 settings: None,
+
+                init_error: None,
             },
 
             Task::perform(
@@ -34,6 +37,10 @@ impl App<'static> {
     }
 
     pub fn view(&self) -> Element<'_, AppMessage> {
+        if let Some(error) = &self.init_error {
+            return error_screen_view(error);
+        }
+
         match self.screen {
             AppScreen::Home => match &self.home {
                 Some(home) => home.view().map(|m| AppMessage::HomeMessage(m)),
@@ -59,6 +66,7 @@ impl App<'static> {
                 },
                 Err(e) => {
                     log_error(&e);
+                    self.init_error = Some(e);
                     Task::none()
                 },
             },
