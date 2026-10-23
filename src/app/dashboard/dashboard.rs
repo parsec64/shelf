@@ -93,6 +93,7 @@ impl Dashboard {
                 }
                 Task::done(
                     DashboardMessage::SetGroupSelected(
+                        // TODO: Make this go to Recent as a fallback instead
                         Self::find_selected_group_or_default(&self.group_selected, &self.group_list)
                     )
                 )

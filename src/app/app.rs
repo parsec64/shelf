@@ -117,10 +117,10 @@ impl App<'static> {
             },
             match self.theme {
                 AppTheme::Light => Palette {
-                    background: color!(0xEDF2F8),
+                    background: color!(0xFCF9EA),
                     text: color!(0x27374D),
                     primary: color!(0x526D82),
-                    success: color!(0x07C400),
+                    success: color!(0x50FA7B),
                     warning: color!(0xE77B00),
                     danger: color!(0xF54927),
                 },
