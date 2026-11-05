@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::str::FromStr;
 
-use sqlx::sqlite::{SqlitePool, SqlitePoolOptions};
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePool, SqlitePoolOptions};
 
 use crate::data::ensure_data_dir;
 use crate::utils::logger::{log_debug, log_info};
@@ -13,19 +14,21 @@ use crate::constants::{DB_FILE_NAME, MIGRATOR};
 pub async fn init_db() -> Result<Arc<SqlitePool>, String> {
     let db_path = database_path().map_err(|e| e.to_string())?;
 
-    // Make sure the file exists
-    if !db_path.exists() {
-        std::fs::File::create(&db_path)
-            .map_err(|e| format!("Failed to create database file: {e}"))?;
-    }
-
     // Sqlite url
     let url = format!("sqlite:{}", db_path.display());
     log_info(&format!("Database url: {}", url));
 
+    // Configure SQLite at connection creation time. SQLite's foreign-key
+    // enforcement is connection-local, so it must be enabled for every
+    // connection opened by the pool.
+    let options = SqliteConnectOptions::from_str(&url)
+        .map_err(|e| format!("Failed to parse database url: {e}"))?
+        .create_if_missing(true)
+        .foreign_keys(true);
+
     let pool = SqlitePoolOptions::new()
         .max_connections(5)
-        .connect(&url)
+        .connect_with(options)
         .await
         .map_err(|e| format!("Failed to connect to database: {e}"))?;
 
