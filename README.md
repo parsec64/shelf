@@ -3,17 +3,17 @@
 [![Rust](https://img.shields.io/badge/rust-1.88+-orange.svg?style=flat-square&logo=rust)](https://www.rust-lang.org/)
 [![iced](https://img.shields.io/badge/gui-iced%200.14-blue.svg?style=flat-square)](https://iced.rs/)
 [![SQLite](https://img.shields.io/badge/db-sqlite-003B57.svg?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
-[![version](https://img.shields.io/badge/version-0.1.0-brightgreen.svg?style=flat-square)](Cargo.toml)
-[![platform](https://img.shields.io/badge/platform-Linux-FCC624.svg?style=flat-square&logo=linux&logoColor=black)]()
+[![version](https://img.shields.io/badge/version-0.2.0-brightgreen.svg?style=flat-square)](Cargo.toml)
+[![platform](https://img.shields.io/badge/platform-Linux-FCC624.svg?style=flat-square&logo=linux&logoColor=black)](<>)
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 
 A local shelf for the commands you keep reaching for
 
 **Shelf** is a desktop app for collecting, organizing, and running the shell commands and scripts you use all the time. Built for people who live in a terminal but still want a fast, searchable library with groups, tags, and favourites.
 
->Offline (Your data stays in `~/.shelf`)
+> Offline (Your data stays in `~/.shelf`)
 
->Currently Linux only
+> Currently Linux only
 
 ![Dashboard](screenshots/dashboard.png)
 ![Form](screenshots/form.png)
@@ -22,15 +22,15 @@ A local shelf for the commands you keep reaching for
 
 ## What it does
 
-| Capability | Detail |
-|------------|--------|
-| **Commands & scripts** | Save one-liners or multi-line scripts with optional titles, descriptions, and tags |
-| **Groups** | Organize by project, tool, or habit; Default group for unsorted items |
-| **Recent & Favourites** | Jump back to what you actually use |
-| **Search** | Match on command body, script name, and tags |
-| **Copy** | One click to clipboard |
-| **Run** *(future)* | Open a real terminal session and execute from the UI |
-| **Settings** | Theme, text size, preferred shell / terminal, run behaviour |
+| Capability              | Detail                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| **Commands & scripts**  | Save one-liners or multi-line scripts with optional titles, descriptions, and tags |
+| **Groups**              | Organize by project, tool, or habit; Default group for unsorted items              |
+| **Recent & Favourites** | Jump back to what you actually use                                                 |
+| **Search**              | Match on command body, script name, and tags                                       |
+| **Copy**                | One click to clipboard                                                             |
+| **Run** _(future)_      | Open a real terminal session and execute from the UI                               |
+| **Settings**            | Theme, text size, preferred shell / terminal, run behaviour                        |
 
 Built with **Rust**
 
@@ -91,7 +91,7 @@ Theme and text size apply in the UI. Shell / terminal / run mode feed the execut
 
 ## Roadmap
 
-### Prototype (current)
+### Current
 
 - [x] Local SQLite library of commands and scripts
 - [x] Groups, tags, favourites, recent
@@ -118,6 +118,6 @@ Theme and text size apply in the UI. Shell / terminal / run mode feed the execut
 
 ---
 
->shelf — keep your sharpest commands within reach
+> shelf — keep your sharpest commands within reach
 
 ---
