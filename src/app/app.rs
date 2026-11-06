@@ -5,7 +5,6 @@ use super::{App, AppMessage};
 use super::home::Home;
 use super::dashboard::Dashboard;
 use super::settings::Settings;
-
 use crate::data::settings::{AppScreen, AppTheme};
 use crate::data::db::init_db;
 use crate::components::loading_screen::loading_screen_view;
@@ -19,8 +18,9 @@ impl App<'static> {
         (
             Self {
                 title: APP_NAME,
-                theme: AppTheme::Dark,
-                screen: AppScreen::Home,
+                theme: Default::default(),
+                screen: Default::default(),
+                text_size: Default::default(),
 
                 home: None,
                 dashboard: None,
@@ -38,21 +38,21 @@ impl App<'static> {
 
     pub fn view(&self) -> Element<'_, AppMessage> {
         if let Some(error) = &self.init_error {
-            return error_screen_view(error);
+            return error_screen_view(error, &self.text_size);
         }
 
         match self.screen {
             AppScreen::Home => match &self.home {
-                Some(home) => home.view().map(|m| AppMessage::HomeMessage(m)),
-                None => loading_screen_view(),
+                Some(home) => home.view(&self.text_size).map(|m| AppMessage::HomeMessage(m)),
+                None => loading_screen_view(&self.text_size),
             },
             AppScreen::Dashboard => match &self.dashboard {
-                Some(dashboard) => dashboard.view(self.title, &self.theme).map(|m| AppMessage::DashboardMessage(m)),
-                None => loading_screen_view(),
+                Some(dashboard) => dashboard.view(self.title, &self.theme, &self.text_size).map(|m| AppMessage::DashboardMessage(m)),
+                None => loading_screen_view(&self.text_size),
             },
             AppScreen::Settings => match &self.settings {
-                Some(settings) => settings.view().map(|m| AppMessage::SettingsMessage(m)),
-                None => loading_screen_view(),
+                Some(settings) => settings.view(&self.text_size).map(|m| AppMessage::SettingsMessage(m)),
+                None => loading_screen_view(&self.text_size),
             },
         }
     }
@@ -95,7 +95,7 @@ impl App<'static> {
                 None => Task::none(),
             },
             AppMessage::SettingsMessage(settings_m) => match &mut self.settings {
-                Some(settings) => settings.update(settings_m, &mut self.screen, &mut self.theme).map(|m| AppMessage::SettingsMessage(m)),
+                Some(settings) => settings.update(settings_m, &mut self.screen, &mut self.theme, &mut self.text_size).map(|m| AppMessage::SettingsMessage(m)),
                 None => Task::none(),
             },
         }

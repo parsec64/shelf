@@ -4,12 +4,14 @@ use iced_phosphor::{regular, fill};
 
 use super::GroupInfo;
 use crate::app::dashboard::{Dashboard, DashboardMessage};
-use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
+use crate::data::settings::TextSize;
+use crate::utils::font_size::font_size;
 
 
 impl Dashboard {
-    pub fn sidebar_view(&self) -> Element<'_, DashboardMessage> {
+    pub fn sidebar_view(&self, text_size: &TextSize) -> Element<'_, DashboardMessage> {
+        let text_size = text_size;
         container(
             column![
                 // Collapse side bar
@@ -19,7 +21,7 @@ impl Dashboard {
                         false => space(),
                     },
 
-                    button(regular::sidebar_simple().size(sv(20.0)))
+                    button(regular::sidebar_simple().size(font_size(20.0, text_size)))
                     .on_press(DashboardMessage::SetSidebarOpen)
                     .padding([0, 8])
                     .style(|theme, _| button::Style {
@@ -37,7 +39,7 @@ impl Dashboard {
                     center_x(
                         row![
                             regular::plus()
-                                .size(sv(20.0))
+                                .size(font_size(20.0, text_size))
                                 .style(|theme| text::Style {
                                     color: Some(theme.palette().success),
                                     ..Default::default()
@@ -47,7 +49,7 @@ impl Dashboard {
                                 true => "Group",
                                 false => "",
                             })
-                            .size(sv_16())
+                            .size(font_size(16.0, text_size))
                             .style(|theme: &Theme| text::Style {
                                 color: Some(theme.palette().success),
                                 ..Default::default()
@@ -76,7 +78,7 @@ impl Dashboard {
                         self.group_list.iter().fold(
                             Column::new()
                                 .spacing(10),
-                            |column, group| column.push(Self::group_card_view(group, group.id == self.group_selected.id, &self.sidebar_open)),
+                            |column, group| column.push(Self::group_card_view(group, group.id == self.group_selected.id, &self.sidebar_open, text_size)),
                         )
                     )
                 )
@@ -84,7 +86,7 @@ impl Dashboard {
         )
         .height(Length::Fill)
         .width(match self.sidebar_open {
-            true => sv(250.0) as u32,
+            true => font_size(250.0, text_size) as u32,
             false => 70,
         })
         .padding(10)
@@ -99,7 +101,7 @@ impl Dashboard {
         .into()
     }
 
-    fn group_card_view(group: &GroupInfo, selected: bool, open: &bool) -> Element<'static, DashboardMessage> {
+    fn group_card_view(group: &GroupInfo, selected: bool, open: &bool, text_size: &TextSize) -> Element<'static, DashboardMessage> {
         let (id, name, item_count, hovered) = (
             group.id,
             group.name.as_str(),
@@ -114,13 +116,13 @@ impl Dashboard {
                         // Group icon
                         match name {
                             "Recent" => fill::clock_counter_clockwise()
-                                .size(sv_20())
+                                .size(font_size(20.0, text_size))
                                 .color(color!(0x8be9fd)),
                             "Favourites" => fill::star()
-                                .size(sv_20())
+                                .size(font_size(20.0, text_size))
                                 .color(color!(0x8be9fd)),
                             _ => fill::stack()
-                                .size(sv_20())
+                                .size(font_size(20.0, text_size))
                                 .color(color!(0xffb86c)),
                         },
 
@@ -129,7 +131,7 @@ impl Dashboard {
                             true => row![
                                 // Group title
                                 text(clamp_name(name, 13))
-                                    .size(sv(15.0))
+                                    .size(font_size(15.0, text_size))
                                     .style(|theme: &Theme| text::Style {
                                         color: Some(theme.palette().text),
                                         ..Default::default()
@@ -147,7 +149,7 @@ impl Dashboard {
                                         // Trash
                                         button(
                                             fill::trash()
-                                                .size(sv(15.0))
+                                                .size(font_size(15.0, text_size))
                                         )
                                         .on_press(DashboardMessage::OpenDeleteGroupBox(group.clone()))
                                         .padding(0)
@@ -159,7 +161,7 @@ impl Dashboard {
                                     false => container(
                                         // Count
                                         text(item_count)
-                                            .size(sv(15.0))
+                                            .size(font_size(15.0, text_size))
                                             .style(|theme: &Theme| text::Style {
                                                 color: Some(theme.palette().primary),
                                                 ..Default::default()

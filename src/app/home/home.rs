@@ -2,8 +2,8 @@ use iced::{Element, Task};
 use iced::widget::{button, center, column, text};
 
 use super::{Home, HomeMessage};
-use crate::data::settings::AppScreen;
-use crate::utils::font_size::{sv, sv_20};
+use crate::data::settings::{AppScreen, TextSize};
+use crate::utils::font_size::font_size;
 
 
 impl Home {
@@ -14,12 +14,12 @@ impl Home {
         )
     }
 
-    pub fn view(&self) -> Element<'_, HomeMessage> {
+    pub fn view(&self, text_size: &TextSize) -> Element<'_, HomeMessage> {
         center(
             column![
-                text("Shelf").size(sv(30.0)),
+                text("Shelf").size(font_size(30.0, text_size)),
 
-                button(text("Explore the shelf").size(sv_20()))
+                button(text("Explore the shelf").size(font_size(20.0, text_size)))
                     .on_press(HomeMessage::SetScreen(AppScreen::Dashboard)),
             ]
             .spacing(10)

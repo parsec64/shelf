@@ -4,7 +4,7 @@ use iced::{Border, Element, Length, Task, Theme};
 use super::{Settings, SettingsMessage};
 use crate::components::status_bar::{StatusMessage, StatusType, status_bar_view};
 use crate::data::ensure_data_dir;
-use crate::data::settings::{AppScreen, AppTheme, SettingsInfo, get_settings, load_settings, set_settings};
+use crate::data::settings::{AppScreen, AppTheme, SettingsInfo, TextSize, get_settings, load_settings, set_settings};
 use crate::utils::logger::log_error;
 use crate::constants::APP_VERSION;
 
@@ -23,17 +23,17 @@ impl Settings {
         )
     }
 
-    pub fn view(&self) -> Element<'_, SettingsMessage> {
+    pub fn view(&self, text_size: &TextSize) -> Element<'_, SettingsMessage> {
         container(
             column![
                 // Navigator
-                self.navigator_view(),
+                self.navigator_view(text_size),
 
                 // Setting list
                 container(
                     center_x(
                         scrollable(
-                            self.setting_list_view()
+                            self.setting_list_view(text_size)
                         )
                     )
                 )
@@ -52,6 +52,7 @@ impl Settings {
                 status_bar_view(
                     &self.status_message,
                     SettingsMessage::SetStatusMessage(StatusMessage::default()),
+                    text_size,
                 ),
             ]
         )
@@ -66,7 +67,7 @@ impl Settings {
         .into()
     }
 
-    pub fn update(&mut self, message: SettingsMessage, screen: &mut AppScreen, theme: &mut AppTheme) -> Task<SettingsMessage> {
+    pub fn update(&mut self, message: SettingsMessage, screen: &mut AppScreen, theme: &mut AppTheme, text_size: &mut TextSize) -> Task<SettingsMessage> {
         match message {
             SettingsMessage::LoadSettings => {
                 match load_settings() {
@@ -74,6 +75,8 @@ impl Settings {
                         Ok(settings) => {
                             *theme = settings.theme.clone();
                             *screen = settings.screen.clone();
+                            *text_size = settings.text_size.clone();
+
                             self.setting_list = settings;
                             self.data_dir = match ensure_data_dir() {
                                 Ok(path) => path.to_string_lossy().into_owned(),
@@ -137,7 +140,10 @@ impl Settings {
             }
             SettingsMessage::SetTextSize(size) => {
                 match set_settings(|s| s.text_size = size.clone()) {
-                    Ok(_) => self.setting_list.text_size = size,
+                    Ok(_) => {
+                        self.setting_list.text_size = size.clone();
+                        *text_size = size;
+                    },
                     Err(e) => log_error(&e),
                 };
                 Task::none()

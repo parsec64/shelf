@@ -6,10 +6,10 @@ mod settings;
 use std::sync::Arc;
 use sqlx::{Pool, Sqlite};
 
-use super::data::settings::{AppScreen, AppTheme};
 use home::{Home, HomeMessage};
 use dashboard::{Dashboard, DashboardMessage};
 use settings::{Settings, SettingsMessage};
+use super::data::settings::{AppScreen, AppTheme, TextSize};
 
 
 #[derive(Debug)]
@@ -17,6 +17,7 @@ pub struct App<'a: 'static> {
     title: &'a str,
     theme: AppTheme,
     screen: AppScreen,
+    text_size: TextSize,
 
     home: Option<Home>,
     dashboard: Option<Dashboard>,

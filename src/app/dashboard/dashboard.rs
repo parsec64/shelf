@@ -8,7 +8,7 @@ use super::{Dashboard, GroupInfo, Dialog, ItemInfo, ItemType, ItemFilter, Dashbo
 use crate::app::dashboard::item_editor::ItemEditor;
 use crate::app::dashboard::search_result::SearchResult;
 use crate::components::status_bar::{StatusMessage, StatusType, status_bar_view};
-use crate::data::settings::{AppScreen, AppTheme};
+use crate::data::settings::{AppScreen, AppTheme, TextSize};
 use crate::services::item::{ItemRow, create_item, delete_item, load_items_for_group, update_item, update_item_favourite, update_item_used};
 use crate::services::group::{GroupRow, create_group, delete_group, load_groups, update_group};
 use crate::services::search::{SearchRow, search_items};
@@ -41,36 +41,37 @@ impl Dashboard {
         )
     }
 
-    pub fn view(&self, title: &'static str, theme: &AppTheme) -> Element<'_, DashboardMessage> {
+    pub fn view(&self, title: &'static str, theme: &AppTheme, text_size: &TextSize) -> Element<'_, DashboardMessage> {
         stack![
             // Dashboard content
             column![
                 // Navigator
-                self.navigator_view(title, theme),
+                self.navigator_view(title, theme, text_size),
 
                 stack![
                     // Group view
                     row![
                         // Group list
-                        self.sidebar_view(),
+                        self.sidebar_view(text_size),
 
                         // Group
-                        self.group_view(),
+                        self.group_view(text_size),
                     ],
 
                     // Search result
-                    self.search_result_view(),
+                    self.search_result_view(text_size),
                 ],
 
                 // Status bar
                 status_bar_view(
                     &self.status_message,
                     DashboardMessage::SetStatusMessage(StatusMessage::default()),
+                    text_size,
                 )
             ],
 
             // Popup to create/edit/delete items
-            self.item_editor_view(),
+            self.item_editor_view(text_size),
         ]
         .into()
     }

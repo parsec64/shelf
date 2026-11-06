@@ -3,7 +3,9 @@ use iced::{Border, Color, Element, Length, Theme};
 use iced::widget::{button, center, container, row, space, text};
 use iced_phosphor::regular;
 
-use crate::utils::font_size::sv;
+use crate::data::settings::TextSize;
+use crate::utils::font_size::font_size;
+
 
 
 #[derive(Debug, Clone, Default)]
@@ -30,7 +32,7 @@ impl StatusMessage {
 /*
  * Shows status messges such as error, success etc
  */
-pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessage, on_clear: Message) -> Element<'a, Message> {
+pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessage, on_clear: Message, text_size: &TextSize) -> Element<'a, Message> {
     let StatusMessage { message, status } = status_message;
 
     container(
@@ -38,7 +40,7 @@ pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessag
             Some(message) => {
                 row![
                     text(message)
-                        .size(sv(14.0))
+                        .size(font_size(14.0, text_size))
                         .style(|theme: &Theme| text::Style {
                             color: Some(accent_color(status, &theme.palette())),
                             ..Default::default()
@@ -47,7 +49,7 @@ pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessag
                     space()
                         .width(Length::Fill),
 
-                    button(center(regular::x_circle().size(sv(17.0))))
+                    button(center(regular::x_circle().size(font_size(17.0, text_size))))
                         .on_press(on_clear)
                         .padding(0)
                         .width(20)
@@ -59,7 +61,7 @@ pub fn status_bar_view<'a, Message: Clone + 'a>(status_message: &'a StatusMessag
             },
             None => row![
                 text("No problem")
-                    .size(sv(14.0))
+                    .size(font_size(14.0, text_size))
                     .style(|theme: &Theme| text::Style {
                         color: Some(accent_color(&StatusType::None, &theme.palette())),
                         ..Default::default()

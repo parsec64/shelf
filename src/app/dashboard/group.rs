@@ -5,12 +5,13 @@ use iced::{Alignment, Background, Border, Color, Element, Font, Length, Theme, c
 use iced_phosphor::{fill, regular};
 
 use crate::app::dashboard::{Dashboard, DashboardMessage, ItemFilter, ItemInfo, ItemType};
-use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
+use crate::data::settings::TextSize;
+use crate::utils::font_size::font_size;
 
 
 impl Dashboard {
-    pub fn group_view(&self) -> Element<'_, DashboardMessage> {
+    pub fn group_view(&self, text_size: &TextSize) -> Element<'_, DashboardMessage> {
         container(
             column![
                 // Fancy group name
@@ -22,7 +23,7 @@ impl Dashboard {
                     Span::new(self.group_selected.name.clone()).color(color!(0x276CF5)),
                     Span::new("$ "),
                 ]
-                .size(sv_16())
+                .size(font_size(16.0, text_size))
                 .wrapping(Wrapping::WordOrGlyph),
 
                 // Group controls and filters
@@ -34,7 +35,7 @@ impl Dashboard {
                             true => fill::terminal(),
                             false => regular::terminal(),
                         }
-                        .size(sv_20()))
+                        .size(font_size(20.0, text_size)))
                         .padding([0, 3])
                         .on_press(DashboardMessage::SetFilter(ItemFilter {
                             command: !self.item_filter.command,
@@ -51,7 +52,7 @@ impl Dashboard {
                             true => fill::code(),
                             false => regular::code(),
                         }
-                        .size(sv_20()))
+                        .size(font_size(20.0, text_size)))
                         .padding([0, 3])
                         .on_press(DashboardMessage::SetFilter(ItemFilter {
                             script: !self.item_filter.script,
@@ -68,7 +69,7 @@ impl Dashboard {
                             true => fill::funnel_simple(),
                             false => regular::funnel_simple(),
                         }
-                        .size(sv_20()))
+                        .size(font_size(20.0, text_size)))
                         .padding([0, 3])
                         .on_press(DashboardMessage::SetFilter(ItemFilter {
                             alphabetical: !self.item_filter.alphabetical,
@@ -92,7 +93,7 @@ impl Dashboard {
                             // Edit group
                             match self.group_selected.name.as_str() != "Default" {
                                 true => container(
-                                    button(center(fill::pencil_simple().size(sv_20())))
+                                    button(center(fill::pencil_simple().size(font_size(20.0, text_size))))
                                         .on_press(DashboardMessage::OpenEditGroupBox(self.group_selected.clone()))
                                         .height(Length::Shrink)
                                         .width(Length::Shrink)
@@ -112,14 +113,14 @@ impl Dashboard {
                             button(
                                 row![
                                     regular::plus()
-                                        .size(sv_20())
+                                        .size(font_size(20.0, text_size))
                                         .style(|theme| text::Style {
                                             color: Some(theme.palette().success),
                                             ..Default::default()
                                         }),
 
                                     text("Command")
-                                        .size(sv_16())
+                                        .size(font_size(16.0, text_size))
                                         .style(|theme: &Theme| text::Style {
                                             color: Some(theme.palette().success),
                                             ..Default::default()
@@ -146,14 +147,14 @@ impl Dashboard {
                             button(
                                 row![
                                     regular::plus()
-                                        .size(sv_20())
+                                        .size(font_size(20.0, text_size))
                                         .style(|theme| text::Style {
                                             color: Some(theme.palette().success),
                                             ..Default::default()
                                         }),
 
                                     text("Script")
-                                        .size(sv_16())
+                                        .size(font_size(16.0, text_size))
                                         .style(|theme: &Theme| text::Style {
                                             color: Some(theme.palette().success),
                                             ..Default::default()
@@ -187,7 +188,7 @@ impl Dashboard {
                             // Text
                             container(match self.group_selected.description.as_ref() {
                                 "" => text("No description")
-                                    .size(sv_16())
+                                    .size(font_size(16.0, text_size))
                                     .font(Font {
                                         family: Family::Monospace,
                                         style: Style::Italic, // ISSUE: Italic not working
@@ -200,7 +201,7 @@ impl Dashboard {
                                     true => text(description),
                                     false => text(clamp_name(description, 120)),
                                 }
-                                .size(sv_16())
+                                .size(font_size(16.0, text_size))
                                 .style(|theme: &Theme| text::Style {
                                     color: Some(theme.palette().primary),
                                 }),
@@ -211,8 +212,8 @@ impl Dashboard {
                             match self.group_selected.description.as_str() {
                                 "" => container(space()),
                                 _ => container(button(match self.group_description_open {
-                                        true => regular::caret_up().size(sv_20()),
-                                        false => regular::caret_down().size(sv_20()),
+                                        true => regular::caret_up().size(font_size(20.0, text_size)),
+                                        false => regular::caret_down().size(font_size(20.0, text_size)),
                                     })
                                     .on_press(DashboardMessage::SetGroupDescriptionOpen)
                                     .padding([0, 5])
@@ -240,7 +241,7 @@ impl Dashboard {
                             .fold(
                                 Column::new()
                                     .spacing(10),
-                                |column, item| column.push(Self::item_card_view(item)),
+                                |column, item| column.push(Self::item_card_view(item, text_size)),
                             )
                     )
                 )
@@ -261,7 +262,7 @@ impl Dashboard {
         .into()
     }
 
-    fn item_card_view<'a>(item: &'a ItemInfo) -> Element<'a, DashboardMessage> {
+    fn item_card_view<'a>(item: &'a ItemInfo, text_size: &TextSize) -> Element<'a, DashboardMessage> {
         let (id, name, content, description, is_favourite, tags, highlighted, hovered, copied, _description_collapsed) = (
             item.id,
             match &item.name {
@@ -286,10 +287,10 @@ impl Dashboard {
             },
         };
 
-        fn tag_view(tag: &str) -> Element<'_, DashboardMessage> {
+        fn tag_view<'a>(tag: &'a str, text_size: &TextSize) -> Element<'a, DashboardMessage> {
             container(
                 text(tag)
-                    .size(sv(13.0))
+                    .size(font_size(13.0, text_size))
                     .color(color!(0xF8F8F2))
             )
             .padding([2, 5])
@@ -315,7 +316,7 @@ impl Dashboard {
                             row![
                                 // Icon
                                 icon
-                                    .size(sv_20())
+                                    .size(font_size(20.0, text_size))
                                     .color(Color::from_rgb(0.3, 0.4, 0.6)),
 
                                 // Name of script / Content of command TODO: highlight this
@@ -324,7 +325,7 @@ impl Dashboard {
                                     ItemType::Script => name,
                                 })
                                 .wrapping(Wrapping::WordOrGlyph)
-                                .size(sv(15.0))
+                                .size(font_size(15.0, text_size))
                                 .style(|theme: &Theme| text::Style {
                                     color: Some(theme.palette().text),
                                     ..Default::default()
@@ -340,7 +341,7 @@ impl Dashboard {
                             match item.item_type {
                                 ItemType::Script => container(
                                     text(content)
-                                    .size(sv(15.0))
+                                    .size(font_size(15.0, text_size))
                                     .color(Color::from_rgb(0.5, 0.5, 0.6))
                                 )
                                 .padding(5),
@@ -350,13 +351,13 @@ impl Dashboard {
                             // Description
                             container(match description {
                                 "" => text("No description")
-                                    .size(sv(15.0))
+                                    .size(font_size(15.0, text_size))
                                     .style(|theme: &Theme| text::Style {
                                         color: Some(theme.palette().primary.scale_alpha(0.5)),
                                         ..Default::default()
                                     }),
                                 _ => text(description)
-                                    .size(sv(15.0))
+                                    .size(font_size(15.0, text_size))
                                     .style(|theme: &Theme| text::Style {
                                         color: Some(theme.palette().primary),
                                         ..Default::default()
@@ -369,7 +370,7 @@ impl Dashboard {
                                 .iter()
                                 .fold(
                                     Row::new().padding(5).spacing(6),
-                                    |row, tag| row.push(tag_view(tag)),
+                                    |row, tag| row.push(tag_view(tag, text_size)),
                                 ),
                         ]
                         .spacing(8)
@@ -385,7 +386,7 @@ impl Dashboard {
                     // Favourite, Edit, Delete buttons
                     column![
                         // Run
-                        button(fill::play().size(sv_16()))
+                        button(fill::play().size(font_size(16.0, text_size)))
                             .on_press(DashboardMessage::RunCommand(content.to_string()))
                             .style(|theme, _| button::Style {
                                 text_color: theme.palette().success,
@@ -396,7 +397,7 @@ impl Dashboard {
                         match is_favourite {
                             // If the item is a favourite, show the star icon
                             true => container(
-                                button(fill::star().size(sv_16()))
+                                button(fill::star().size(font_size(16.0, text_size)))
                                     .on_press(DashboardMessage::SetItemFavourite(id))
                                     .style(|theme, _| button::Style {
                                         text_color: match theme.extended_palette().is_dark {
@@ -409,7 +410,7 @@ impl Dashboard {
                             // If the item is not a favourite, hide the star icon but show the empty star icon on hover
                             false => match hovered {
                                 true => container(
-                                    button(regular::star().size(sv_16()))
+                                    button(regular::star().size(font_size(16.0, text_size)))
                                         .on_press(DashboardMessage::SetItemFavourite(id))
                                         .style(|theme, _| button::Style {
                                             text_color: theme.palette().primary,
@@ -424,14 +425,14 @@ impl Dashboard {
                         // Show the edit, delete buttons on hover
                         match hovered {
                             true => column![
-                                button(fill::pencil_simple().size(sv_16()))
+                                button(fill::pencil_simple().size(font_size(16.0, text_size)))
                                     .on_press(DashboardMessage::OpenEditItemBox(item.clone()))
                                     .style(|theme, _| button::Style {
                                         text_color: theme.palette().primary,
                                         ..Default::default()
                                     }),
 
-                                button(fill::trash().size(sv_16()))
+                                button(fill::trash().size(font_size(16.0, text_size)))
                                     .on_press(DashboardMessage::OpenDeleteItemBox(item.clone()))
                                     .style(|theme, _| button::Style {
                                         text_color: theme.palette().danger,
@@ -444,7 +445,7 @@ impl Dashboard {
                         .width(35)
                         .spacing(10),
                     ]
-                    .height(sv(155.0)) // ISSUE: Approximate height that fits visible icon set
+                    .height(font_size(155.0, text_size)) // ISSUE: Approximate height that fits visible icon set
                     .spacing(10)
                 ]
             )

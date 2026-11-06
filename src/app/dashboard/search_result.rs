@@ -5,7 +5,8 @@ use iced_phosphor::{fill, regular};
 
 use super::{Dashboard, DashboardMessage};
 use crate::components::modal::modal_view;
-use crate::utils::font_size::{sv, sv_16};
+use crate::data::settings::TextSize;
+use crate::utils::font_size::font_size;
 
 
 #[derive(Debug, Clone)]
@@ -18,7 +19,7 @@ pub struct SearchResult {
 }
 
 impl Dashboard {
-    pub fn search_result_view(&self) -> Element<'_, DashboardMessage> {
+    pub fn search_result_view(&self, text_size: &TextSize) -> Element<'_, DashboardMessage> {
         match &self.search_result {
             Some(result) => modal_view(
                 container(
@@ -31,7 +32,7 @@ impl Dashboard {
                                     .fold(
                                         Column::new()
                                             .spacing(10),
-                                        |column, item| column.push(Self::result_item_view(item)),
+                                        |column, item| column.push(Self::result_item_view(item, text_size)),
                                     )
                             }
                             .width(600)
@@ -59,7 +60,7 @@ impl Dashboard {
         }
     }
 
-    fn result_item_view(item: &SearchResult) -> Element<'_, DashboardMessage>  {
+    fn result_item_view<'a>(item: &'a SearchResult, text_size: &TextSize) -> Element<'a, DashboardMessage>  {
         let (id, name, item_icon, group_id, group_name) = (
             item.id,
             item.name.as_str(),
@@ -74,28 +75,28 @@ impl Dashboard {
         button(
             row![
                 item_icon
-                    .size(sv_16())
+                    .size(font_size(16.0, text_size))
                     .style(|theme: &Theme| text::Style {
                         color: Some(theme.palette().primary),
                         ..Default::default()
                     }),
 
                 text(name)
-                    .size(sv(15.0))
+                    .size(font_size(15.0, text_size))
                     .wrapping(Wrapping::None),
 
                 space()
                     .width(Length::Fill),
 
                 fill::stack()
-                    .size(sv(14.0))
+                    .size(font_size(14.0, text_size))
                     .style(|theme: &Theme| text::Style {
                         color: Some(theme.palette().primary),
                         ..Default::default()
                     }),
 
                 text(group_name)
-                    .size(sv(13.0))
+                    .size(font_size(13.0, text_size))
                     .wrapping(Wrapping::None)
                     .style(|theme: &Theme| text::Style {
                         color: Some(theme.palette().text.scale_alpha(0.5)),

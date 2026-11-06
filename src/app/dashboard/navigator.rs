@@ -3,18 +3,18 @@ use iced::widget::{button, center_x, container, row, space, text, text_input};
 use iced_phosphor::regular;
 
 use super::{Dashboard, DashboardMessage};
-use crate::data::settings::{AppScreen, AppTheme};
-use crate::utils::font_size::{sv, sv_16, sv_20};
+use crate::data::settings::{AppScreen, AppTheme, TextSize};
+use crate::utils::font_size::font_size;
 
 
 impl Dashboard {
-    pub fn navigator_view(&self, title: &'static str, theme: &AppTheme) -> Element<'_, DashboardMessage> {
+    pub fn navigator_view(&self, title: &'static str, theme: &AppTheme, text_size: &TextSize) -> Element<'_, DashboardMessage> {
         container(
             row![
                 // App name
                 button(
                     text(title)
-                        .size(sv(18.0)))
+                        .size(font_size(18.0, text_size)))
                         .style(|theme: &Theme, _| {
                             button::Style {
                                 border: Border::default(),
@@ -31,7 +31,7 @@ impl Dashboard {
                     container(
                         row![
                             // Search button
-                            button(regular::magnifying_glass().size(sv_16()))
+                            button(regular::magnifying_glass().size(font_size(16.0, text_size)))
                                 .on_press(DashboardMessage::Search)
                                 .style(|theme, _| button::Style {
                                     text_color: theme.palette().primary,
@@ -42,7 +42,7 @@ impl Dashboard {
                             text_input("Search", &self.search_query)
                                 .on_input(|query| DashboardMessage::SetSearchQuery(Some(query)))
                                 .on_submit(DashboardMessage::Search)
-                                .size(sv_16())
+                                .size(font_size(16.0, text_size))
                                 .style(|theme: &Theme, _| text_input::Style {
                                     background: Background::Color(theme.palette().background).scale_alpha(0.0),
                                     border: Border {
@@ -57,7 +57,7 @@ impl Dashboard {
                             // Clear button
                             match self.search_query.as_str() {
                                 "" => container(space()),
-                                _ => container(button(regular::x().size(sv(15.0)))
+                                _ => container(button(regular::x().size(font_size(15.0, text_size)))
                                     .on_press(DashboardMessage::SetSearchQuery(None))
                                     .style(|theme, _| button::Style {
                                         text_color: theme.palette().primary,
@@ -67,7 +67,7 @@ impl Dashboard {
                         ]
                         .align_y(Alignment::Center)
                     )
-                    .width(sv(600.0))
+                    .width(font_size(600.0, text_size))
                     .padding(2)
                     .align_y(Alignment::Center)
                     .style(|theme: &Theme| container::Style {
@@ -85,7 +85,7 @@ impl Dashboard {
                 // Shortcuts
                 row![
                     // Settings
-                    button(regular::gear_six().size(sv_20()))
+                    button(regular::gear_six().size(font_size(20.0, text_size)))
                         .style(|theme, _| button::Style {
                             text_color: theme.palette().primary,
                             ..Default::default()
@@ -95,10 +95,10 @@ impl Dashboard {
                     // Switch theme
                     button(match theme {
                         AppTheme::Dark => regular::moon()
-                            .size(sv_20())
+                            .size(font_size(20.0, text_size))
                             .color(color!(0xF1FA8C)),
                         AppTheme::Light => regular::sun()
-                            .size(sv_20())
+                            .size(font_size(20.0, text_size))
                             .color(color!(0xE77B00)),
                     })
                     .style(|_, _| button::Style {

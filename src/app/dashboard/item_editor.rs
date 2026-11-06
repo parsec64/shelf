@@ -6,8 +6,9 @@ use iced_phosphor::regular;
 
 use super::{Dashboard, DashboardMessage};
 use crate::components::modal::modal_view;
-use crate::utils::font_size::{sv, sv_16, sv_20};
 use crate::utils::formatting::clamp_name;
+use crate::data::settings::TextSize;
+use crate::utils::font_size::font_size;
 
 
 // TODO: implement helper functions for each dialog type
@@ -39,7 +40,7 @@ pub enum Dialog {
 }
 
 impl Dashboard {
-    pub fn item_editor_view(&self) -> Element<'_, DashboardMessage> {
+    pub fn item_editor_view(&self, text_size: &TextSize) -> Element<'_, DashboardMessage> {
         match &self.item_editor {
             Some(editor) => modal_view(
                 container(
@@ -56,7 +57,7 @@ impl Dashboard {
                             Dialog::EditScript => text("Edit Script"),
                             Dialog::DeleteScript => text("Delete Script"),
                         }
-                        .size(sv(18.0))
+                        .size(font_size(18.0, text_size))
                         .style(|theme: &Theme| text::Style {
                             color: Some(Self::accent_color(&editor.dialog, &theme.palette())),
                             ..Default::default()
@@ -68,7 +69,7 @@ impl Dashboard {
                                 Some(error) => text(error),
                                 None => text(""),
                             }
-                            .size(sv(15.0))
+                            .size(font_size(15.0, text_size))
                             .style(|theme: &Theme| text::Style {
                                 color: Some(theme.palette().danger),
                                 ..Default::default()
@@ -82,7 +83,7 @@ impl Dashboard {
                             Dialog::DeleteGroup | Dialog::DeleteCommand | Dialog::DeleteScript => column![
                                 match &editor.name {
                                     Some(name) => container(
-                                        text(format!("Are you sure you want to delete '{}' ?", clamp_name(name, 30))).size(sv(13.0))
+                                        text(format!("Are you sure you want to delete '{}' ?", clamp_name(name, 30))).size(font_size(13.0, text_size))
                                     )
                                     .padding(Padding {
                                         bottom: 15.0,
@@ -98,20 +99,21 @@ impl Dashboard {
                                             Dialog::NewCommand | Dialog::EditCommand => "Content",
                                             _ => "Name",
                                         },
-                                        name, &false, |name| DashboardMessage::SetItemEditorName(name)
+                                        name, &false, |name| DashboardMessage::SetItemEditorName(name),
+                                        text_size
                                     ),
                                     None => space().into(),
                                 },
                                 match &editor.content {
-                                    Some(content) => Self::text_editor_view("Content", content, true, &false, |action| DashboardMessage::SetItemEditorContent(action)),
+                                    Some(content) => Self::text_editor_view("Content", content, true, &false, |action| DashboardMessage::SetItemEditorContent(action), text_size),
                                     None => space().into(),
                                 },
                                 match &editor.description {
-                                    Some(description) => Self::text_editor_view("Description (optional)", description, false, &false, |action| DashboardMessage::SetItemEditorDescription(action)),
+                                    Some(description) => Self::text_editor_view("Description (optional)", description, false, &false, |action| DashboardMessage::SetItemEditorDescription(action), text_size),
                                     None => space().into(),
                                 },
                                 match &editor.tags {
-                                    Some(tags) => Self::tag_input_view(tags, &editor.tag.as_deref().unwrap_or(""), &false, |tag| DashboardMessage::SetItemEditorTag(tag), DashboardMessage::AddToItemEditorTags, |index| DashboardMessage::RemoveFromItemEditorTags(index)),
+                                    Some(tags) => Self::tag_input_view(tags, &editor.tag.as_deref().unwrap_or(""), &false, |tag| DashboardMessage::SetItemEditorTag(tag), DashboardMessage::AddToItemEditorTags, |index| DashboardMessage::RemoveFromItemEditorTags(index), text_size),
                                     None => space().into(),
                                 },
 
@@ -126,7 +128,7 @@ impl Dashboard {
 
                             // Cancel
                             button(center(
-                                text("Cancel").size(sv_16())
+                                text("Cancel").size(font_size(16.0, text_size))
                             ))
                             .on_press(DashboardMessage::CloseItemEditor)
                             .height(40)
@@ -147,7 +149,7 @@ impl Dashboard {
                             // Confirm
                             button(center(
                                 text("Confirm")
-                                    .size(sv_16())
+                                    .size(font_size(16.0, text_size))
                                     .style(|_| text::Style {
                                         color: Some(color!(0x27374D)),
                                         ..Default::default()
@@ -175,7 +177,7 @@ impl Dashboard {
                 .width(match editor.dialog {
                     Dialog::NewGroup | Dialog::EditGroup |
                     Dialog::DeleteGroup | Dialog::DeleteCommand | Dialog::DeleteScript => 430.0,
-                    _ => sv(500.0),
+                    _ => font_size(500.0, text_size),
                 })
                 .height(Length::Shrink)
                 .style(|theme| container::Style {
@@ -212,12 +214,18 @@ impl Dashboard {
         }
     }
 
-    fn text_input_view<'a, F>(placeholder: &str, value: &'a str, error: &'a bool, on_input: F) -> Element<'a, DashboardMessage>
-    where F: Fn(String) -> DashboardMessage + 'a
+    fn text_input_view<'a, F>(
+        placeholder: &str,
+        value: &'a str,
+        error: &'a bool,
+        on_input: F,
+        text_size: &TextSize
+    ) -> Element<'a, DashboardMessage>
+        where F: Fn(String) -> DashboardMessage + 'a
     {
         text_input(placeholder, value)
             .on_input(on_input)
-            .size(sv_16())
+            .size(font_size(16.0, text_size))
             .padding(10)
             .style(move |theme: &Theme, _| text_input::Style {
                 background: Background::Color(theme.palette().primary.scale_alpha(0.1)),
@@ -240,13 +248,20 @@ impl Dashboard {
             .into()
     }
 
-    fn text_editor_view<'a, F>(placeholder: &'a str, content: &'a Content, highlight: bool, error: &'a bool, on_action: F) -> Element<'a, DashboardMessage>
+    fn text_editor_view<'a, F>(
+        placeholder: &'a str,
+        content: &'a Content,
+        highlight: bool,
+        error: &'a bool,
+        on_action: F,
+        text_size: &TextSize
+    ) -> Element<'a, DashboardMessage>
         where F: Fn(Action) -> DashboardMessage + 'a
     {
         text_editor(content)
             .on_action(on_action)
             .placeholder(placeholder)
-            .size(sv_16())
+            .size(font_size(16.0, text_size))
             .height(125.0)
             .padding(10)
             .wrapping(Wrapping::WordOrGlyph)
@@ -284,15 +299,16 @@ impl Dashboard {
         on_input: impl Fn(String) -> DashboardMessage + 'a,
         on_add: DashboardMessage,
         on_remove: impl Fn(usize) -> DashboardMessage + 'a,
+        text_size: &TextSize
     ) -> Element<'a, DashboardMessage> {
-        fn tag_view(name: &str, on_remove: impl Fn() -> DashboardMessage) -> Element<'_, DashboardMessage> {
+        fn tag_view<'a>(name: &'a str, on_remove: impl Fn() -> DashboardMessage, text_size: &TextSize) -> Element<'a, DashboardMessage> {
             container(
                 row![
                     text(name)
                         .color(color!(0xF8F8F2))
-                        .size(sv(13.0)),
+                        .size(font_size(13.0, text_size)),
 
-                    button(regular::x().size(sv(15.0)))
+                    button(regular::x().size(font_size(15.0, text_size)))
                         .on_press(on_remove())
                         .padding(0)
                         .style(|theme, _| button::Style {
@@ -324,7 +340,7 @@ impl Dashboard {
                     Row::new()
                         .spacing(5),
                     |row, (index, name)| row.push(
-                        tag_view(name, || on_remove(index))
+                        tag_view(name, || on_remove(index), text_size)
                     )
                 )
                 .wrap(),
@@ -334,7 +350,7 @@ impl Dashboard {
                 text_input("Tag name", tag)
                     .on_input(on_input)
                     .on_submit(on_add.clone())
-                    .size(sv_16())
+                    .size(font_size(16.0, text_size))
                     .padding(10)
                     .style(move |theme: &Theme, _| text_input::Style {
                         background: Background::Color(theme.palette().primary.scale_alpha(0.1)),
@@ -356,9 +372,9 @@ impl Dashboard {
                     }),
 
                 // Add
-                button(center_y(regular::plus().size(sv_20())))
+                button(center_y(regular::plus().size(font_size(20.0, text_size))))
                 .on_press(on_add)
-                .height(sv(40.0)) // ISSUE: Approximate height that fits the input field
+                .height(font_size(40.0, text_size)) // ISSUE: Approximate height that fits the input field
                 .style(|theme, _| button::Style {
                     text_color: theme.palette().text,
                     border: Border {
