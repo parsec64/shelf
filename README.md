@@ -3,7 +3,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.88+-orange.svg?style=flat-square&logo=rust)](https://www.rust-lang.org/)
 [![iced](https://img.shields.io/badge/gui-iced%200.14-blue.svg?style=flat-square)](https://iced.rs/)
 [![SQLite](https://img.shields.io/badge/db-sqlite-003B57.svg?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
-[![version](https://img.shields.io/badge/version-0.2.0-brightgreen.svg?style=flat-square)](Cargo.toml)
+[![version](https://img.shields.io/badge/version-0.1.0-brightgreen.svg?style=flat-square)](Cargo.toml)
 [![platform](https://img.shields.io/badge/platform-Linux-FCC624.svg?style=flat-square&logo=linux&logoColor=black)](<>)
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 
@@ -29,7 +29,7 @@ A local shelf for the commands you keep reaching for
 | **Recent & Favourites** | Jump back to what you actually use                                                 |
 | **Search**              | Match on command body, script name, and tags                                       |
 | **Copy**                | One click to clipboard                                                             |
-| **Run** _(future)_      | Open a real terminal session and execute from the UI                               |
+| **Run**                 | Open a new terminal window and execute from the UI                                 |
 | **Settings**            | Theme, text size, preferred shell / terminal, run behaviour                        |
 
 Built with **Rust**
@@ -85,7 +85,7 @@ Settings are stored in `~/.shelf/settings.json`:
 }
 ```
 
-Theme and text size apply in the UI. Shell / terminal / run mode feed the executor when Run is enabled.
+Theme and text size apply in the UI. Run uses the selected terminal and Bash, showing a shell-style prompt before executing the saved text. New window is supported; Reuse session is planned. Keep open waits for Enter after the command exits.
 
 ---
 
@@ -97,13 +97,13 @@ Theme and text size apply in the UI. Shell / terminal / run mode feed the execut
 - [x] Groups, tags, favourites, recent
 - [x] Search and clipboard
 - [x] Settings and theming
-- [ ] Reliable **Run** via terminal + session helper (`shelf-run`)
+- [x] Run commands and scripts in a new terminal window
 
 ### Toward 1.0
 
 - [ ] Stable one-job-at-a-time terminal session (busy / idle)
 - [ ] Reuse the same terminal window for successive runs
-- [ ] Safer quoting and script temp-file execution
+- [ ] Session helper (`shelf-run`) for reusable terminal sessions
 - [ ] Search result → jump to group and highlight item
 - [ ] Empty states, clearer errors in the status bar
 - [ ] Packaging (distro-friendly binary or Flatpak later)

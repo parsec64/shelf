@@ -8,7 +8,7 @@ use crate::data::settings::SettingsInfo;
 
 // App
 pub const APP_NAME: &str = "Shelf";
-pub const APP_VERSION: &str = "0.2.0";
+pub const APP_VERSION: &str = "0.1.0";
 
 
 // Data

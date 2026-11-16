@@ -387,7 +387,7 @@ impl Dashboard {
                     column![
                         // Run
                         button(fill::play().size(font_size(16.0, text_size)))
-                            .on_press(DashboardMessage::RunCommand(content.to_string()))
+                            .on_press(DashboardMessage::RunItem(id))
                             .style(|theme, _| button::Style {
                                 text_color: theme.palette().success,
                                 ..Default::default()

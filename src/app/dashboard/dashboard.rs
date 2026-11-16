@@ -12,6 +12,8 @@ use crate::data::settings::{AppScreen, AppTheme, TextSize};
 use crate::services::item::{ItemRow, create_item, delete_item, load_items_for_group, update_item, update_item_favourite, update_item_used};
 use crate::services::group::{GroupRow, create_group, delete_group, load_groups, update_group};
 use crate::services::search::{SearchRow, search_items};
+use crate::services::runner::run;
+use crate::data::settings::get_settings;
 use crate::utils::formatting::clamp_name;
 use crate::utils::logger::log_error;
 
@@ -235,8 +237,14 @@ impl Dashboard {
                 let pool = self.pool.clone();
                 Task::perform(
                     update_item_used(pool, id),
-                    |_| DashboardMessage::None, // TODO: Recent group count must be incremented
+                    DashboardMessage::ItemUsedDone,
                 )
+            },
+            DashboardMessage::ItemUsedDone(result) => match result {
+                Ok(()) => Task::done(DashboardMessage::LoadDashboard),
+                Err(e) => Task::done(DashboardMessage::SetStatusMessage(
+                    StatusMessage::new(Some(format!("Could not update Recent: {e}")), StatusType::Error)
+                )),
             },
             DashboardMessage::SetItemHovered(id) => {
                 let item = match self.find_item(id) {
@@ -275,10 +283,27 @@ impl Dashboard {
                 }
                 Task::none()
             },
-            DashboardMessage::RunCommand(_command) => {
-                Task::done(DashboardMessage::SetStatusMessage(
-                    StatusMessage::new(Some(format!("Cannot run command (Feature not implemented)")), StatusType::Warn)
-                ))
+            DashboardMessage::RunItem(id) => {
+                let Some(item) = self.find_item(id) else {
+                    return Task::none();
+                };
+                let content = item.content.clone();
+                let settings = match get_settings() {
+                    Ok(settings) => settings,
+                    Err(e) => return Task::done(DashboardMessage::SetStatusMessage(
+                        StatusMessage::new(Some(format!("Could not read settings: {e}")), StatusType::Error)
+                    )),
+                };
+                Task::perform(async move { run(&content, &settings) }, move |result| DashboardMessage::RunItemDone(id, result))
+            },
+            DashboardMessage::RunItemDone(id, result) => match result {
+                Ok(()) => {
+                    self.status_message = StatusMessage::new(Some("Opened terminal".into()), StatusType::Success);
+                    Task::done(DashboardMessage::SetItemUsed(id))
+                },
+                Err(e) => Task::done(DashboardMessage::SetStatusMessage(
+                    StatusMessage::new(Some(e), StatusType::Error)
+                )),
             },
             DashboardMessage::OpenNewGroupBox => {
                 self.item_editor = Some(
@@ -502,21 +527,21 @@ impl Dashboard {
                         let pool = self.pool.clone();
                         Task::perform(
                             async move { create_group(pool, name, description.text()).await.map(|_| ()) },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::EditGroup => {
                         let pool = self.pool.clone();
                         Task::perform(
                             async move { update_group(pool, id, name, description.text()).await },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::DeleteGroup => {
                         let pool = self.pool.clone();
                         Task::perform(
                             async move { delete_group(pool, id).await },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::NewCommand => {
@@ -528,7 +553,7 @@ impl Dashboard {
                                     .await
                                     .map(|_| ())
                             },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::EditCommand => {
@@ -539,7 +564,7 @@ impl Dashboard {
                                     .await
                                     .map(|_| ())
                             },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::NewScript => {
@@ -551,7 +576,7 @@ impl Dashboard {
                                     .await
                                     .map(|_| ())
                             },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::EditScript => {
@@ -562,19 +587,19 @@ impl Dashboard {
                                     .await
                                     .map(|_| ())
                             },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                     Dialog::DeleteCommand | Dialog::DeleteScript => {
                         let pool = self.pool.clone();
                         Task::perform(
                             async move { delete_item(pool, id).await },
-                            DashboardMessage::ItemEditorDone,
+                            DashboardMessage::SubmitItemFormDone,
                         )
                     },
                 }
             },
-            DashboardMessage::ItemEditorDone(result) => {
+            DashboardMessage::SubmitItemFormDone(result) => {
                 let editor = match &self.item_editor {
                     Some(editor) => editor,
                     None => return Task::none(),

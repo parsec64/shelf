@@ -100,11 +100,13 @@ pub enum DashboardMessage {
     SetItemFavourite(i32),
     SetItemFavouriteDone(i32, bool),
     SetItemUsed(i32),
+    ItemUsedDone(Result<(), String>),
     SetItemHovered(i32),
     HighlightItem(i32),
     CopyItemContent(i32),
     CopyItemContentDone(i32),
-    RunCommand(String),
+    RunItem(i32),
+    RunItemDone(i32, Result<(), String>),
 
     OpenNewGroupBox,
     OpenEditGroupBox(GroupInfo),
@@ -121,7 +123,7 @@ pub enum DashboardMessage {
     SetItemEditorError(String),
     CloseItemEditor, // Immediately closes the item box
     SubmitItemForm, // Emitting Task -> ItemBoxDone without closing
-    ItemEditorDone(Result<(), String>), // Closes or Display error
+    SubmitItemFormDone(Result<(), String>), // Closes or Display error
 
     SetStatusMessage(StatusMessage),
 
